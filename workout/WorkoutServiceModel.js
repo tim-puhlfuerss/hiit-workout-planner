@@ -15,25 +15,21 @@ export class WorkoutServiceModel {
   /**
    * Creates a new workout service instance
    *
+   * @param {Response} selectedExerciseCategoriesJson Initially selected exercise categories (this parameter is only relevant for tests)
+   * @param {Response} availableExercisesJson Exercise that can be part of a workout (this parameter is only relevant for tests)
    * @class
    */
-  constructor() {
-    this.#selectedExerciseCategories = this.loadExerciseCategoriesFromDb();
-    this.#availableExercises = this.loadExercisesFromDb();
-  }
+  constructor(
+    selectedExerciseCategoriesJson = null,
+    availableExercisesJson = null,
+  ) {
+    this.#selectedExerciseCategories = selectedExerciseCategoriesJson
+      ? this.#loadExerciseCategoriesFromDb(selectedExerciseCategoriesJson)
+      : this.#loadExerciseCategoriesFromDb();
 
-  /**
-   * Loads and sanitizes exercise categories from the database (JSON file)
-   *
-   * @returns {Promise<ExerciseCategoryValueModel[]>}
-   */
-  async loadExerciseCategoriesFromDb() {
-    const response = await fetch(CONFIG.CATEGORIES_FILE);
-    const json = this.#sanitizeJSON(await response.json());
-
-    return json.exerciseCategories.map(
-      (cat) => new ExerciseCategoryValueModel(cat.name, cat.emoji),
-    );
+    this.#availableExercises = availableExercisesJson
+      ? this.#loadExercisesFromDb(availableExercisesJson)
+      : this.#loadExercisesFromDb();
   }
 
   /**
@@ -167,23 +163,6 @@ export class WorkoutServiceModel {
   }
 
   /**
-   * Loads and sanitizes exercises from the database (JSON file)
-   *
-   * @returns {Promise<ExerciseEntityModel[]>}
-   */
-  async loadExercisesFromDb() {
-    const categories = await this.#selectedExerciseCategories;
-    const response = await fetch(CONFIG.EXERCISES_FILE);
-    const json = this.#sanitizeJSON(await response.json());
-
-    return json.exercises.map((ex) => {
-      const category = categories.find((cat) => cat.getName() === ex.category);
-
-      return new ExerciseEntityModel(ex.name, ex.description, category);
-    });
-  }
-
-  /**
    * Generates a set of exercise based on the current workout configuration
    *
    * @returns {Promise<ExerciseEntityModel[]>}
@@ -247,6 +226,43 @@ export class WorkoutServiceModel {
   }
 
   /**
+   * Loads and sanitizes exercise categories from the database (JSON file)
+   *
+   * @param {Response} exerciseCategoriesJson Exercise category data (this parameter is only relevant for tests)
+   * @returns {Promise<ExerciseCategoryValueModel[]>}
+   */
+  async #loadExerciseCategoriesFromDb(exerciseCategoriesJson = null) {
+    const response = exerciseCategoriesJson
+      ? exerciseCategoriesJson
+      : await fetch(CONFIG.CATEGORIES_FILE);
+    const json = this.#sanitizeJSON(await response.json());
+
+    return json.exerciseCategories.map(
+      (cat) => new ExerciseCategoryValueModel(cat.name, cat.emoji),
+    );
+  }
+
+  /**
+   * Loads and sanitizes exercises from the database (JSON file)
+   *
+   ** @param {Response} exercisesJson Exercise data (this parameter is only relevant for tests)
+   * @returns {Promise<ExerciseEntityModel[]>}
+   */
+  async #loadExercisesFromDb(exercisesJson = null) {
+    const categories = await this.#selectedExerciseCategories;
+    const response = exercisesJson
+      ? exercisesJson
+      : await fetch(CONFIG.EXERCISES_FILE);
+    const json = this.#sanitizeJSON(await response.json());
+
+    return json.exercises.map((ex) => {
+      const category = categories.find((cat) => cat.getName() === ex.category);
+
+      return new ExerciseEntityModel(ex.name, ex.description, category);
+    });
+  }
+
+  /**
    * Recursively sanitizes strings inside a JSON-like object
    *
    * @param {*} obj JSON-like object to sanitize
@@ -254,15 +270,6 @@ export class WorkoutServiceModel {
    * @private
    */
   #sanitizeJSON(obj) {
-    if (typeof obj === "string") {
-      return String(obj)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-    }
-
     if (Array.isArray(obj)) {
       return obj.map((item) => this.#sanitizeJSON(item));
     }
@@ -279,7 +286,12 @@ export class WorkoutServiceModel {
       return sanitized;
     }
 
-    return obj;
+    return String(obj)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
 
   /**
@@ -311,24 +323,6 @@ export class WorkoutServiceModel {
 
     if (!categories || categories.length === 0) {
       errors.push("Select at least one exercise category.");
-    }
-
-    if (
-      this.#selectedExerciseRounds < CONFIG.MIN_ROUNDS ||
-      this.#selectedExerciseRounds > CONFIG.MAX_ROUNDS
-    ) {
-      errors.push(
-        `Number of rounds must be between ${CONFIG.MIN_ROUNDS} and ${CONFIG.MAX_ROUNDS}.`,
-      );
-    }
-
-    if (
-      this.#selectedCategoryChange < CONFIG.MIN_CATEGORY_CHANGE ||
-      this.#selectedCategoryChange > CONFIG.MAX_CATEGORY_CHANGE
-    ) {
-      errors.push(
-        `Rounds before category change must be between ${CONFIG.MIN_CATEGORY_CHANGE} and ${CONFIG.MAX_CATEGORY_CHANGE}.`,
-      );
     }
 
     return {
