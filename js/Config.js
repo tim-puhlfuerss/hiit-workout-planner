@@ -23,8 +23,11 @@ export const CONFIG = {
   MAX_CATEGORY_CHANGE: 100,
 
   /** @type {string} Path to the exercise categories JSON file */
-  CATEGORIES_FILE: "./assets/json/ExerciseCategories.json",
+  CATEGORIES_FILE: new URL(
+    "../assets/json/ExerciseCategories.json",
+    import.meta.url, // URL of the current module (to create an absolute path necessary for testing via Node)
+  ),
 
   /** @type {string} Path to the exercises JSON file */
-  EXERCISES_FILE: "./assets/json/Exercises.json",
+  EXERCISES_FILE: new URL("../assets/json/Exercises.json", import.meta.url),
 };

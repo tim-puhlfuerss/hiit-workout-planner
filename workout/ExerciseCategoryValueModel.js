@@ -42,6 +42,9 @@ export class ExerciseCategoryValueModel {
    * @returns {boolean}
    */
   equals(exerciseCategoryValue) {
-    return this.#name === exerciseCategoryValue.getName();
+    return (
+      this.#name === exerciseCategoryValue.getName() &&
+      this.#emoji === exerciseCategoryValue.getEmoji()
+    );
   }
 }

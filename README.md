@@ -33,7 +33,9 @@ Try the [live version](https://tim-fuchs.github.io/hiit-workout-planner/ "Live V
 
 ## Testing
 
-*Coming soon*
+The unit tests for the model files are located in the [tests](/tests/) folder.
+
+Run the tests using the Node.js test runner: `node --test --experimental-test-coverage`
 
 ## Deployment
 
