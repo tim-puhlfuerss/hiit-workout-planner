@@ -4,7 +4,7 @@ Generate flexible HIIT workouts in seconds.
 
 Try the [live version](https://tim-fuchs.github.io/hiit-workout-planner/ "Live Version") and generate a high-intensity interval training with just one click.
 
-<img src="assets/gifs/Demo.gif" width="40%" />
+<img src="assets/images/Demo.gif" width="40%" />
 
 ## Features
 
@@ -24,7 +24,9 @@ Try the [live version](https://tim-fuchs.github.io/hiit-workout-planner/ "Live V
 
 ## Project Structure
 
-*Coming soon*
+The project structure follows the classic Model-View-Controller pattern:
+
+<img src="assets/images/Diagram.png" width="70%" />
 
 ## Run Locally
 
@@ -33,23 +35,29 @@ Try the [live version](https://tim-fuchs.github.io/hiit-workout-planner/ "Live V
 
 ## Testing
 
+### Local
+
 The unit tests for the model files are located in the [tests](/tests/) folder.
 
-Install dependencies: `npm ci`
+Steps:
 
-Run the tests: `npm test`
+1. Install dependencies: `npm ci`
+2. Run the tests and create code coverage report: `npm run test:coverage` (created via [c8](https://github.com/bcoe/c8))
 
-Run the coverage report: `npm run test:coverage` (uses [c8](https://github.com/bcoe/c8))
+### Deployed
 
-GitHub Actions also reports coverage for pull repuests.
+For pull requests, a [GitHub Actions workflow](.github/workflows/tests-and-coverage.yml) automatically runs the tests and reports the code coverage of the tests via [Codecov](https://about.codecov.io).
 
 ## Deployment
 
-Every push to `main` automatically deploys the latest version to GitHub Pages.
+Every push to `main` automatically deploys the latest version of the web app via GitHub Pages.
 
 ## Contributing
 
-*Coming soon*
+Use the available issue templates to request features or report bugs.
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to create commit messages.
+This is important as changelogs are created automatically via [Release Please](https://github.com/googleapis/release-please).
 
 ## License
 
