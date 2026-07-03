@@ -1,3 +1,10 @@
 {
-    "type": "module"
+    "type": "module",
+    "scripts": {
+        "test": "node --test",
+        "test:coverage": "c8 --reporter=cobertura --reporter=text node --test"
+    },
+    "devDependencies": {
+        "c8": "^10.1.3"
+    }
 }
