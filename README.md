@@ -20,7 +20,7 @@ Try the [live version](https://tim-fuchs.github.io/hiit-workout-planner/ "Live V
 
 - HTML, CSS, and JavaScript
 - [Pico](https://picocss.com "Pico website") for lightweight styling
-- GitHub Pages for automatic deployment
+- GitHub Pages for deployment
 
 ## Project Structure
 
@@ -35,7 +35,13 @@ Try the [live version](https://tim-fuchs.github.io/hiit-workout-planner/ "Live V
 
 The unit tests for the model files are located in the [tests](/tests/) folder.
 
-Run the tests using the Node.js test runner: `node --test --experimental-test-coverage`
+Install dependencies: `npm ci`
+
+Run the tests: `npm test`
+
+Run the coverage report: `npm run test:coverage` (uses [c8](https://github.com/bcoe/c8))
+
+GitHub Actions also reports coverage for pull repuests.
 
 ## Deployment
 
